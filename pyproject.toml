@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "research"
+version = "0.1.0"
+description = ""
+authors = ["meciwo <shanshan0474@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+torch = "^1.7.0"
+pillow = "^8.0.1"
+mecab-python3 = "^1.0.3"
+torchvision = "^0.8.1"
+pandas = "^1.1.4"
+tqdm = "^4.53.0"
+matplotlib = "^3.3.3"
+ipykernel = "^5.3.4"
+python-dotenv = "^0.15.0"
+emoji = "^0.6.0"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^3.8.4"
+pytest = "^6.1.2"
+black = {version = "^20.8b1", allow-prereleases = true}
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

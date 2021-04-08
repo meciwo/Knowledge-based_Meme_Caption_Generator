@@ -3,6 +3,8 @@ import torch.nn as nn
 import torchvision.models as models
 from torch.nn.utils.rnn import pack_padded_sequence
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 class EncoderCNN(nn.Module):
     def __init__(self, embed_size):
@@ -30,7 +32,8 @@ class DecoderRNN(nn.Module):
         """Set the hyper-parameters and build the layers."""
         super(DecoderRNN, self).__init__()
         self.embed = nn.Embedding(vocab_size, embed_size)
-        self.lstm = nn.LSTM(embed_size, hidden_size, num_layers, batch_first=True)
+        self.lstm = nn.LSTM(embed_size, hidden_size,
+                            num_layers, batch_first=True)
         self.linear = nn.Linear(hidden_size, vocab_size)
         self.max_seg_length = max_seq_length
 
@@ -62,3 +65,37 @@ class DecoderRNN(nn.Module):
             sampled_ids, 1
         )  # sampled_ids: (batch_size, max_seq_length)
         return sampled_ids
+
+
+class SSD():
+    def __init__(self):
+
+        self.precision = "fp32"
+        self.ssd_model = torch.hub.load(
+            'NVIDIA/DeepLearningExamples:torchhub', 'nvidia_ssd', model_math=self.precision, map_location=torch.device(device))
+        self.utils = torch.hub.load(
+            'NVIDIA/DeepLearningExamples:torchhub', 'nvidia_ssd_processing_utils', map_location=torch.device(device))
+        self.ssd_model.to(device)
+        self.ssd_model.eval()
+
+    def run(self, features):
+        inputs = [utils.prepare_input(feat) for feat in features]
+        tensor = utils.prepare_tensor(inputs, self.precision == 'fp16')
+        with torch.no_grad():
+            detections_batch = ssd_model(tensor)
+        results_per_input = self.utils.decode_results(detections_batch)
+        best_results_per_input = [self.utils.pick_best(
+            results, 0.40) for results in results_per_input]
+
+        return results_per_input, best_results_per_input
+
+
+class FasterRCNN():
+    def __init_(self):
+        self.model = models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
+        self.model.eval()
+
+    def run(self, features):
+        result = self.model(features)
+        labels = [obj.get("label") for obj in result]
+        return labels

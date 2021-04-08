@@ -16,6 +16,7 @@ matplotlib = "^3.3.3"
 ipykernel = "^5.3.4"
 python-dotenv = "^0.15.0"
 emoji = "^0.6.0"
+wikipedia2vec = "^1.0.5"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.4"
